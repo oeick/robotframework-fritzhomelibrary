@@ -11,7 +11,7 @@ temperature from thermostatic radiator valve.
 
 ## Installation
 
-$ pip install robotframework-fritzhome
+$ pip install robotframework-fritzhomelibrary
 
 
 ## Import

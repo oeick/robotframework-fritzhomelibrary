@@ -40,7 +40,7 @@ class FritzHome:
     | ${temperature_kelvin}     | Get Temperature | name_of_the_device | Kelvin     |
     """
 
-    ROBOT_LIBRARY_VERSION = '0.1.0'
+    ROBOT_LIBRARY_VERSION = '1.0.0'
     ROBOT_LIBRARY_SCOPE = 'TEST CASE'
 
     is_session_open: bool
