@@ -40,7 +40,7 @@ class FritzHome:
     | ${temperature_kelvin}     | Get Temperature | name_of_the_device | Kelvin     |
     """
 
-    ROBOT_LIBRARY_VERSION = '1.0.0'
+    ROBOT_LIBRARY_VERSION = '1.1.0'
     ROBOT_LIBRARY_SCOPE = 'TEST CASE'
 
     is_session_open: bool
@@ -168,9 +168,9 @@ class FritzHome:
         """ Returns a list with names of all switches from the opened session."""
         return [d.name for d in self.devices if 'switch' in d.functions]
 
-    @keyword(name='Get All TRV')
-    def get_all_trv(self) -> List[str]:
-        """ Returns a list with names of all thermostatic radiator valves from the opened session."""
+    @keyword
+    def get_all_radiator_controls(self) -> List[str]:
+        """ Returns a list with names of all radiator controls from the opened session."""
         return [d.name for d in self.devices if 'hkr' in d.functions]
 
     @keyword
@@ -290,47 +290,47 @@ class FritzHome:
         state = alert_device.text
         return state
 
-    @keyword(name='Get TRV Setpoint')
-    def get_trv_setpoint(self, trvname: str, unit: str = 'celsius') -> str:
+    @keyword
+    def get_radiator_control_setpoint(self, name: str, unit: str = 'celsius') -> str:
         """
-        Returns the setpoint of the TRV (thermostatic radiator valve) with the given name.
+        Returns the setpoint of the radiator control with the given name.
 
         The setpoint is the temperature to be reached by the radiator.
         """
-        temperature = float(self._send_switch_command('gethkrtsoll', ain=self._get_ain_by_name(trvname)).strip())
+        temperature = float(self._send_switch_command('gethkrtsoll', ain=self._get_ain_by_name(name)).strip())
         return self._convert_temperature(temperature, 'halfdegrees celsius', unit)
 
-    @keyword(name='Get TRV Comfort')
-    def get_trv_comfort(self, trvname: str, unit: str = 'celsius') -> str:
+    @keyword
+    def get_radiator_control_comfort(self, name: str, unit: str = 'celsius') -> str:
         """
-        Returns the comfort temperature of the TRV (thermostatic radiator valve) with the given name.
+        Returns the comfort temperature of the radiator control with the given name.
 
         The comfort temperature and the low temperature are set by fritzbox configuration.
         """
-        temperature = float(self._send_switch_command('gethkrkomfort', ain=self._get_ain_by_name(trvname)).strip())
+        temperature = float(self._send_switch_command('gethkrkomfort', ain=self._get_ain_by_name(name)).strip())
         return self._convert_temperature(temperature, 'halfdegrees celsius', unit)
 
-    @keyword(name='Get TRV Low')
-    def get_trv_low(self, trvname: str, unit: str = 'celsius') -> str:
+    @keyword
+    def get_radiator_control_economy(self, name: str, unit: str = 'celsius') -> str:
         """
-        Returns the low temperature of the TRV (thermostatic radiator valve) with the given name.
+        Returns the economy temperature of the radiator control with the given name.
 
-        The comfort temperature and the low temperature are set by fritzbox configuration.
+        The comfort temperature and the economy temperature are set by fritzbox configuration.
         """
-        temperature = float(self._send_switch_command('gethkrabsenk', ain=self._get_ain_by_name(trvname)).strip())
+        temperature = float(self._send_switch_command('gethkrabsenk', ain=self._get_ain_by_name(name)).strip())
         return self._convert_temperature(temperature, 'halfdegrees celsius', unit)
 
-    @keyword(name='Set TRV Setpoint')
-    def set_trv_setpoint(self, trvname: str, temperature: Union[float, str], unit: str = 'celsius'):
+    @keyword
+    def set_radiator_control_setpoint(self, name: str, temperature: Union[float, str], unit: str = 'celsius'):
         """
         Sets the temperature to be reached by the radiator.
 
-        Setpoint temperature can be replaced by the fritzbox with comfort or low temperature, if configured so.
+        Setpoint temperature can be replaced by the fritzbox with comfort or economy temperature, if configured so.
 
-        Changes to the TRV can take up to 15 minutes to have effect.
+        Changes to the radiator control can take up to 15 minutes to have effect.
         """
         temperature = self._convert_temperature(float(temperature), unit, 'halfdegrees celsius')
-        self._send_switch_command('sethkrtsoll', ain=self._get_ain_by_name(trvname), param=str(temperature)).strip()
+        self._send_switch_command('sethkrtsoll', ain=self._get_ain_by_name(name), param=str(temperature)).strip()
 
 
 class UnknownCommandError(Exception):
