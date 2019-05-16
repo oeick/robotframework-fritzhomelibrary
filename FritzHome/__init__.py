@@ -40,7 +40,7 @@ class FritzHome:
     | ${temperature_kelvin}     | Get Temperature | name_of_the_device | Kelvin     |
     """
 
-    ROBOT_LIBRARY_VERSION = '1.1.0'
+    ROBOT_LIBRARY_VERSION = '1.2.0'
     ROBOT_LIBRARY_SCOPE = 'TEST CASE'
 
     is_session_open: bool
@@ -154,6 +154,15 @@ class FritzHome:
         if session_id == NO_SESSION:
             raise PermissionError('Access to home automation interface denied.')
 
+        self.session_id = session_id
+        self.is_session_open = True
+        self.devices = self._get_infos_of_all_devices()
+
+    @keyword
+    def continue_session(self, session_id, url: str = 'http://fritz.box'):
+        """ Continues a session with a valid session id. """
+        self.login_url = f'{url}/login_sid.lua'
+        self.homeautoswitch_url = f'{url}/webservices/homeautoswitch.lua'
         self.session_id = session_id
         self.is_session_open = True
         self.devices = self._get_infos_of_all_devices()

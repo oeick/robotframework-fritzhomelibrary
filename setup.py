@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(name='robotframework-fritzhomelibrary',
-      version='1.1.0',
+      version='1.2.0',
       author='Oliver Eickmeyer',
       author_email='oliver.eickmeyer@gmail.com',
       description='Access to AVM Home Automation with Robot Framework',

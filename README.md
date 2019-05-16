@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/oeick/robotframework-fritzhomelibrary.svg?branch=master)](https://travis-ci.org/oeick/robotframework-fritzhomelibrary)
+
 # Robot Framework FritzHome Library
 
 A Robot Framework Library to access the AVM Home Automation HTTP 
