@@ -7,7 +7,7 @@ from itertools import product
 class InternalFunctionsTests(unittest.TestCase):
 
     def test_parse_device_infos(self):
-        with open('device_infos.xml', 'r') as input_file:
+        with open('tests/device_infos.xml', 'r') as input_file:
             xml = input_file.read()
         devices = FritzHome._parse_device_infos(ET.fromstring(xml))
         self.assertIn(Device('10001 1000001', 'Contact 1', []), devices)
