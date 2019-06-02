@@ -1,7 +1,7 @@
 import requests
 import xml.etree.ElementTree as ET
 import hashlib
-from typing import List, Union
+from typing import List, Tuple, Union
 from dataclasses import dataclass
 from robot.api.deco import keyword
 from robot.api import logger
@@ -40,7 +40,7 @@ class FritzHome:
     | ${temperature_kelvin}     | Get Temperature | name_of_the_device | Kelvin     |
     """
 
-    ROBOT_LIBRARY_VERSION = '1.2.0'
+    ROBOT_LIBRARY_VERSION = '1.3.0'
     ROBOT_LIBRARY_SCOPE = 'TEST CASE'
 
     is_session_open: bool
@@ -341,10 +341,40 @@ class FritzHome:
         temperature = self._convert_temperature(float(temperature), unit, 'halfdegrees celsius')
         self._send_switch_command('sethkrtsoll', ain=self._get_ain_by_name(name), param=str(temperature)).strip()
 
+    @keyword
+    def get_power_stats(self, name: str) -> Tuple[float, List[float]]:
+        """
+        Gets the power statistics for the given device.
+
+        Returns the resolution (time difference between values in Seconds) and
+        a list of power values (in Watt, first is newest).
+
+        Example:
+        | ${resolution} | ${values} | Get Power Stats | My Switch 1 |
+
+        If device provides no values (for example when it is disconnected),
+        the keyword will return resolution 0.0 and an empty list.
+        """
+        response = self._send_switch_command(
+            'getbasicdevicestats', response_format='xml', ain=self._get_ain_by_name(name))
+        power_element: ET.Element = response.find('power')
+        if power_element is None:
+            raise NotSupportedByDeviceError(f'Device "{name}" does not support power measurement.')
+        power_stats = power_element.find('stats')
+        resolution, values = 0.0, []
+        if power_stats is not None:
+            resolution = float(power_stats.attrib['grid'])
+            values = [float(v)/100 for v in power_stats.text.split(',')]
+        return resolution, values
+
 
 class UnknownCommandError(Exception):
     pass
 
 
 class DeviceNotFoundError(Exception):
+    pass
+
+
+class NotSupportedByDeviceError(Exception):
     pass
